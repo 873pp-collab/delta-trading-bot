@@ -13,16 +13,32 @@ delta_client = DeltaRestClient(
     api_secret=API_SECRET
 )
 
-PRODUCT_ID = 84
+PRODUCT_ID = 27
 ORDER_SIZE = 1
 
 current_position = None
 
 
+@app.route("/")
+def home():
+    return "Trading bot running"
+
+
+@app.route("/webhook", methods=["POST"])
+def webhook():
+
+    data = request.data.decode("utf-8")
+    print("Webhook received:", data)
+
+    handle_signal(data)
+
+    return "ok", 200
+
+
 def buy():
     global current_position
 
-    print("Executing BUY order")
+    print("Executing BUY")
 
     response = delta_client.place_order(
         product_id=PRODUCT_ID,
@@ -39,7 +55,7 @@ def buy():
 def sell():
     global current_position
 
-    print("Executing SELL order")
+    print("Executing SELL")
 
     response = delta_client.place_order(
         product_id=PRODUCT_ID,
@@ -64,15 +80,3 @@ def handle_signal(signal):
 
     elif "SELL" in signal:
         sell()
-
-
-@app.route("/webhook", methods=["POST"])
-def webhook():
-
-    data = request.data.decode("utf-8")
-
-    print("Webhook received:", data)
-
-    handle_signal(data)
-
-    return "ok", 200
