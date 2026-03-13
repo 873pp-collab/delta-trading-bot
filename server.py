@@ -1,16 +1,16 @@
-from flask import Flask, request, jsonify
-from main import handle_signal
+from flask import Flask, request
 
 app = Flask(__name__)
 
-@app.route("/webhook", methods=["POST"])
+@app.route('/webhook', methods=['POST'])
 def webhook():
+    data = request.data.decode("utf-8")
+    print("Webhook received:", data)
 
-    raw_signal = request.data.decode("utf-8").strip()
+    if data == "BUY":
+        print("BUY signal received")
 
-    print("ALERT RECEIVED:", raw_signal)
+    elif data == "SELL":
+        print("SELL signal received")
 
-    if raw_signal:
-        handle_signal(raw_signal)
-
-    return jsonify({"status": "ok"})
+    return "ok", 200
